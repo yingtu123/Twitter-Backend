@@ -1,0 +1,32 @@
+version: '3'
+
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_NAME=twitter
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=${DATABASE_PASSWORD}
+    command: python manage.py runserver 0.0.0.0:8000
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    environment:
+      - MYSQL_DATABASE=twitter
+      - MYSQL_ROOT_PASSWORD=${DATABASE_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+
+volumes:
+  mysql_data:
