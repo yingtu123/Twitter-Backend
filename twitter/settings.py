@@ -9,7 +9,7 @@ https://docs.djangoproject.com/en/3.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.1/ref/settings/
 """
-
+import os
 from pathlib import Path
 
 import sys
@@ -21,13 +21,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.1/howto/deployment/checklist/
 
+
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = '(k#qq7dw0fy773)$8f44@9tj+9y(%u*22q8z*4ytgiw=-pzd6x'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['127.0.0.1', '192.168.33.10', 'localhost']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -47,11 +49,6 @@ INSTALLED_APPS = [
 
     # project apps
     'accounts',
-    'tweets',
-    'friendships',
-    'newsfeeds',
-    'comments',
-    'likes',
 ]
 
 REST_FRAMEWORK = {
@@ -99,11 +96,16 @@ WSGI_APPLICATION = 'twitter.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'twitter',
-        'HOST': '0.0.0.0',
+        'NAME': os.getenv('DATABASE_NAME', 'twitter'),
+        'USER': os.getenv('DATABASE_USER', 'root'),
+        'PASSWORD': os.getenv('DATABASE_PASSWORD', 'yingtu123'),
+        'HOST': os.getenv('DATABASE_HOST', 'db'),  # 这里一定要用 'db'，而不是 '0.0.0.0'
         'PORT': '3306',
-        'USER': 'root',
-        'PASSWORD': 'yingtu123',  # 这里是自己下载mysql时候输入两次的那个密码
+        'OPTIONS': {
+            'init_command': "SET sql_mode='STRICT_TRANS_TABLES'",
+            'charset': 'utf8mb4',
+            'auth_plugin':'mysql_native_password' # 添加这行
+        }
     }
 }
 
@@ -179,26 +181,18 @@ MEDIA_ROOT = 'media/'
 # DO NOT pip install memcache or django-memcached
 CACHES = {
     'default': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 86400,
-    },
-    'testing': {
-        'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
-        'LOCATION': '127.0.0.1:11211',
-        'TIMEOUT': 86400,
-        'PREFIX': 'testing',
-    },
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+    }
 }
 
 # Redis
 # 安装方法: sudo apt-get install redis
 # 然后安装 redis 的 python 客户端： pip install redis
-REDIS_HOST = '127.0.0.1'
-REDIS_PORT = 6379
-REDIS_DB = 0 if TESTING else 1
-REDIS_KEY_EXPIRE_TIME = 7 * 86400  # in seconds
-REDIS_LIST_LENGTH_LIMIT = 1000 if not TESTING else 20
+# REDIS_HOST = '127.0.0.1'
+# REDIS_PORT = 6379
+# REDIS_DB = 0 if TESTING else 1
+# REDIS_KEY_EXPIRE_TIME = 7 * 86400  # in seconds
+# REDIS_LIST_LENGTH_LIMIT = 1000 if not TESTING else 20
 
 try:
     from .local_settings import *

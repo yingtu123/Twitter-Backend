@@ -1,0 +1,36 @@
+version: '3'
+services:
+  web:
+    build: .
+    ports:
+      - "8000:8000"
+    volumes:
+      - .:/code
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - DATABASE_HOST=db
+      - DATABASE_NAME=twitter
+      - DATABASE_USER=root
+      - DATABASE_PASSWORD=yingtu123
+    command: python manage.py runserver 0.0.0.0:8000  # 添加启动命令
+
+  db:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password  # 添加这行
+    environment:
+      - MYSQL_DATABASE=twitter
+      - MYSQL_ROOT_PASSWORD=yingtu123
+    volumes:
+      - mysql_data:/var/lib/mysql
+    ports:
+      - "3307:3306"
+    healthcheck: # 添加健康检查
+      test: [ "CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p$$MYSQL_ROOT_PASSWORD" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  mysql_data:
