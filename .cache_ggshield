@@ -1,0 +1,1 @@
+{"last_found_secrets": [{"name": "Generic Password - commit://3ab5a0b304972aea5d405d73096488725d2b91f0/.env.example", "match": "cc7c721875f042b176bd1d467cc4ae25310bb7fd7be87d1ee5ede8776b858e8d"}, {"name": "Django Secret Key - commit://3ab5a0b304972aea5d405d73096488725d2b91f0/.env.example", "match": "bf3196ffe9334f8d5924f3d9a37c4699613876aa2d98e714964213502ada7f39"}]}
