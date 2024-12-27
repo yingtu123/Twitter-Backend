@@ -1,13 +1,15 @@
 from django.contrib import admin
 from django.urls import path, include
-from django.http import HttpResponse
+from rest_framework import routers
+from accounts.api.views import UserViewSet
 
-# 可以添加一个简单的首页视图用于测试
-def index(request):
-    return HttpResponse("Hello, World!")
+
+router = routers.DefaultRouter()
+router.register(r'api/users',UserViewSet)
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api-auth/', include('rest_framework.urls')),
-    path('', index),  # 添加这行来处理根路径
+    path('api-auth/', include('rest_framework.urls',  namespace='rest_framework')),
+    path('', include(router.urls)),
 ]
